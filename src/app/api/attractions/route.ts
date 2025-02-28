@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { mysqlPool } from "@/utils/db";  // ✅ Ensure correct path
+import { mysqlPool } from "@/server/db";  // ✅ Ensure correct path
 //handleGETReq
 export async function GET() {
     const [rows] = await mysqlPool.query(
