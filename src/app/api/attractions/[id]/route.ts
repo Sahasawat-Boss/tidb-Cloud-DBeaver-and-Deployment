@@ -5,10 +5,10 @@ import { RowDataPacket } from "mysql2/promise";
 // ✅ Use Next.js built-in type for dynamic API route parameters
 export async function GET(
     request: NextRequest,
-    { params }: { params: Record<string, string> } // Fix: Use Record<string, string> to avoid type issues
+    { params }: { params: { id: string } } // ✅ Explicitly define params structure
 ) {
     try {
-        const id = params.id;
+        const id = params?.id;
         if (!id) {
             return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
         }
