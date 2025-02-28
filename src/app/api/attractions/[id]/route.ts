@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { mysqlPool } from "../../../../../server/db";
-import { RowDataPacket } from "mysql2/promise"; // ✅ Import correct type
+import { RowDataPacket } from "mysql2/promise";
 
+// Corrected function signature ✅
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: { id: string } } // ✅ Ensure the correct type for Next.js 15+
 ) {
     try {
-        const id = params.id;
+        const { id } = context.params;
         if (!id) {
             return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
         }
