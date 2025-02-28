@@ -2,13 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { mysqlPool } from "../../../../../server/db";
 import { RowDataPacket } from "mysql2/promise";
 
-// Corrected function signature ✅
+// Corrected type for Next.js 15+
+interface Context {
+    params: { id: string };
+}
+
+// ✅ Ensure correct argument structure
 export async function GET(
     request: NextRequest,
-    context: { params: { id: string } } // ✅ Ensure the correct type for Next.js 15+
+    context: Context
 ) {
     try {
-        const { id } = context.params;
+        const id = context.params.id;
         if (!id) {
             return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
         }
@@ -21,7 +26,7 @@ export async function GET(
         connection.release();
 
         return NextResponse.json(rows.length > 0 ? rows[0] : { error: "Not Found" }, { status: rows.length > 0 ? 200 : 404 });
-    } catch {
+    } catch  {
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
