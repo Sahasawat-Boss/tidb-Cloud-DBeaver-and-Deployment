@@ -1,24 +1,25 @@
-import { NextResponse } from "next/server";
-import { mysqlPool } from "@/server/db";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { mysqlPool } from "../../../../../server/db";
+import { RowDataPacket } from "mysql2/promise"; // ✅ Import correct type
 
 export async function GET(
     request: NextRequest,
-    context: { params: { id: string } } // Keep params inside context
+    { params }: { params: { id: string } }
 ) {
     try {
-        const params = await context.params; // Await params before accessing it
-        const id = params.id; // Now params is properly resolved
-
+        const id = params.id;
         if (!id) {
-            return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+            return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
         }
 
         const connection = await mysqlPool.getConnection();
-        const [rows] = await connection.query("SELECT * FROM attractions WHERE id = ?", [id]);
+        const [rows] = await connection.query<RowDataPacket[]>(
+            "SELECT * FROM attractions WHERE id = ?",
+            [id]
+        );
         connection.release();
 
-        return NextResponse.json(rows);
+        return NextResponse.json(rows.length > 0 ? rows[0] : { error: "Not Found" }, { status: rows.length > 0 ? 200 : 404 });
     } catch {
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
